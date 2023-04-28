@@ -1,5 +1,9 @@
 # Changelog
 
+## [V0.0.0a3](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.0a3) (2023-04-28)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.0a2...V0.0.0a3)
+
 ## [V0.0.0a2](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.0a2) (2023-04-28)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/7f3ba2645de2823e5c78ff069129b8eb68785435...V0.0.0a2)
