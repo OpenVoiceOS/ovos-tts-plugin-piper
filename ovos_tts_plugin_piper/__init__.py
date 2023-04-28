@@ -10,15 +10,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import os
+import tarfile
+
 import requests
 from ovos_plugin_manager.templates.g2p import Grapheme2PhonemePlugin
 from ovos_plugin_manager.templates.tts import TTS
-import os
-from ovos_tts_plugin_piper.engine import Piper
-from ovos_utils.xdg_utils import xdg_data_home
-import tarfile
-
 from ovos_utils.log import LOG
+from ovos_utils.xdg_utils import xdg_data_home
+
+from ovos_tts_plugin_piper.engine import Piper
 
 
 class PiperG2P(Grapheme2PhonemePlugin):
@@ -200,12 +201,12 @@ class PiperTTSPlugin(TTS):
 
 
 PiperTTSPluginConfig = {
-    # TODO - list of all models + url + auto download if needed to XDG path
+    lang: [{v: {"model": PiperTTSPlugin.voice2url[v], "offline": True}}
+           for v in voices]
+    for lang, voices in PiperTTSPlugin.lang2voices.items()
 }
 
 if __name__ == "__main__":
-
-
     config = {}
     config["model"] = "alan-low"
     e = PiperTTSPlugin(config=config)
