@@ -10,11 +10,17 @@ OVOS TTS plugin for [piper](https://github.com/rhasspy/piper)
 
 download models from https://github.com/rhasspy/piper/releases/tag/v0.0.2
 
+you can also pass a url for a .tar.gz model and it will be auto downloaded
+
+if no model is passed it will be auto selected based on language
+
+you can pass a model name alias, eg "alan-low"
+
 ```json
   "tts": {
     "module": "ovos-tts-plugin-piper",
     "ovos-tts-plugin-piper": {
-      "model": "path/model.onnx",
+      "model": "alan-low",
     }
   }
 ```

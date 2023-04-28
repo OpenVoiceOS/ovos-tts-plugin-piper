@@ -207,6 +207,6 @@ if __name__ == "__main__":
 
 
     config = {}
-    config["model"] = "~/ovos-tts-plugin-piper/en-gb-southern_english_female-low.onnx"
-    e = PiperTTSPlugin()
+    config["model"] = "alan-low"
+    e = PiperTTSPlugin(config=config)
     e.get_tts("hello world", "hello.wav")
