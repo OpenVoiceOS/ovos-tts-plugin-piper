@@ -191,7 +191,7 @@ class PiperTTSPlugin(TTS):
         with open(wav_file, "wb") as f:
             f.write(wav_bytes)
 
-        phonemes = self.g2p.utterance2arpa(sentence, lang)
+        phonemes = self.g2p.utterance2arpa(sentence, lang, ignore_oov=True)
         phonemes = " ".join([f"{p}:0.4" for p in phonemes])
 
         return wav_file, phonemes
@@ -210,4 +210,4 @@ if __name__ == "__main__":
     config = {}
     config["model"] = "alan-low"
     e = PiperTTSPlugin(config=config)
-    e.get_tts("hello world", "hello.wav")
+    e.get_tts( "one oh clock", "hello.wav")
