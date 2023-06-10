@@ -183,6 +183,10 @@ class PiperTTSPlugin(TTS):
             tuple ((str) file location, (str) generated phonemes)
         """
         lang = lang or self.lang
+        # HACK: bug in some neon-core versions - neon_audio.tts.neon:_get_tts:198 - INFO - Legacy Neon TTS signature found 
+        if isinstance(speaker, dict):
+            LOG.warning("Legacy Neon TTS signature found, pass speaker as a str")
+            speaker = None
         wav_bytes = self.engine.synthesize(sentence,
                                            speaker_id=speaker or self.speaker,
                                            length_scale=self.length_scale,
