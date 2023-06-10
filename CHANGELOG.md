@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.0...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a1...HEAD)
+
+**Merged pull requests:**
+
+- Neon patch [\#3](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/3) ([mikejgray](https://github.com/mikejgray))
+
+## [V0.0.1a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.1a1) (2023-04-30)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.0...V0.0.1a1)
 
 **Fixed bugs:**
 
