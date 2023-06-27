@@ -239,13 +239,8 @@ class PiperTTSPlugin(TTS):
         if isinstance(speaker, dict):
             LOG.warning("Legacy Neon TTS signature found, pass speaker as a str")
             speaker = None
-        engine, speaker = self.get_model(lang, voice, speaker)
 
-        # TODO - speaker doesnt seem to work in piper
-        # onnxruntime.capi.onnxruntime_pybind11_state.InvalidArgument: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Invalid Feed Input Name:sid
-        speaker = None  # force to None until fixed
-        # in addition it seems piper forces speaker_id to 0 when it is defined, wut?
-        # https://github.com/rhasspy/piper/blob/9a7cef83f17c5fff9cce01e8ddf204c223a8546f/src/python_run/piper/__init__.py#L90
+        engine, speaker = self.get_model(lang, voice, speaker)
 
         wav_bytes = engine.synthesize(sentence,
                                       speaker_id=speaker,
@@ -275,4 +270,4 @@ if __name__ == "__main__":
     config["lang"] = "en-us"
     e = PiperTTSPlugin(config=config)
     e.get_tts("one oh clock", "hello.wav")
-    e.get_tts("one oh clock", "amy.wav", voice="amy-low")
+    e.get_tts("one oh clock", "libritts-high.wav", voice="libritts-high")

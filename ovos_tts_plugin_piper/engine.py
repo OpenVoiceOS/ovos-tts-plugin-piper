@@ -88,25 +88,25 @@ class Piper:
             dtype=np.float32,
         )
 
-        if (self.config.num_speakers > 1) and (speaker_id is not None):
+        args = {
+                "input": phoneme_ids_array,
+                "input_lengths": phoneme_ids_lengths,
+                "scales": scales
+            }
+
+        if self.config.num_speakers <= 1:
+            speaker_id = None
+
+        if (self.config.num_speakers > 1) and (speaker_id is None):
             # Default speaker
             speaker_id = 0
 
-        sid = None
-
         if speaker_id is not None:
             sid = np.array([speaker_id], dtype=np.int64)
+            args["sid"] = sid
 
         # Synthesize through Onnx
-        audio = self.model.run(
-            None,
-            {
-                "input": phoneme_ids_array,
-                "input_lengths": phoneme_ids_lengths,
-                "scales": scales,
-                "sid": sid,
-            },
-        )[0].squeeze((0, 1))
+        audio = self.model.run(  None, args, )[0].squeeze((0, 1))
         audio = audio_float_to_int16(audio.squeeze())
 
         # Convert to WAV
