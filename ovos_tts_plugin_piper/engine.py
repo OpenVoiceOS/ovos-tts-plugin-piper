@@ -9,6 +9,7 @@ from typing import List, Mapping, Optional, Sequence, Union
 import numpy as np
 import onnxruntime
 from espeak_phonemizer import Phonemizer
+from ovos_utils.log import LOG
 
 _BOS = "^"
 _EOS = "$"
@@ -29,10 +30,10 @@ class PiperConfig:
 
 class Piper:
     def __init__(
-        self,
-        model_path: Union[str, Path],
-        config_path: Optional[Union[str, Path]] = None,
-        use_cuda: bool = False,
+            self,
+            model_path: Union[str, Path],
+            config_path: Optional[Union[str, Path]] = None,
+            use_cuda: bool = False,
     ):
         if config_path is None:
             config_path = f"{model_path}.json"
@@ -50,12 +51,12 @@ class Piper:
         )
 
     def synthesize(
-        self,
-        text: str,
-        speaker_id: Optional[int] = None,
-        length_scale: Optional[float] = None,
-        noise_scale: Optional[float] = None,
-        noise_w: Optional[float] = None,
+            self,
+            text: str,
+            speaker_id: Optional[int] = None,
+            length_scale: Optional[float] = None,
+            noise_scale: Optional[float] = None,
+            noise_w: Optional[float] = None,
     ) -> bytes:
         """Synthesize WAV audio from text."""
         if length_scale is None:
@@ -72,8 +73,11 @@ class Piper:
         phoneme_ids: List[int] = []
 
         for phoneme in phonemes:
-            phoneme_ids.extend(self.config.phoneme_id_map[phoneme])
-            phoneme_ids.extend(self.config.phoneme_id_map[_PAD])
+            if phoneme in self.config.phoneme_id_map:
+                phoneme_ids.extend(self.config.phoneme_id_map[phoneme])
+                phoneme_ids.extend(self.config.phoneme_id_map[_PAD])
+            else:
+                LOG.warning("No id for phoneme: %s", phoneme)
 
         phoneme_ids.extend(self.config.phoneme_id_map[_EOS])
 
@@ -84,25 +88,25 @@ class Piper:
             dtype=np.float32,
         )
 
-        if (self.config.num_speakers > 1) and (speaker_id is not None):
+        args = {
+                "input": phoneme_ids_array,
+                "input_lengths": phoneme_ids_lengths,
+                "scales": scales
+            }
+
+        if self.config.num_speakers <= 1:
+            speaker_id = None
+
+        if (self.config.num_speakers > 1) and (speaker_id is None):
             # Default speaker
             speaker_id = 0
 
-        sid = None
-
         if speaker_id is not None:
             sid = np.array([speaker_id], dtype=np.int64)
+            args["sid"] = sid
 
         # Synthesize through Onnx
-        audio = self.model.run(
-            None,
-            {
-                "input": phoneme_ids_array,
-                "input_lengths": phoneme_ids_lengths,
-                "scales": scales,
-                "sid": sid,
-            },
-        )[0].squeeze((0, 1))
+        audio = self.model.run(  None, args, )[0].squeeze((0, 1))
         audio = audio_float_to_int16(audio.squeeze())
 
         # Convert to WAV
@@ -135,7 +139,7 @@ def load_config(config_path: Union[str, Path]) -> PiperConfig:
 
 
 def audio_float_to_int16(
-    audio: np.ndarray, max_wav_value: float = 32767.0
+        audio: np.ndarray, max_wav_value: float = 32767.0
 ) -> np.ndarray:
     """Normalize audio and convert to int16 range"""
     audio_norm = audio * (max_wav_value / max(0.01, np.max(np.abs(audio))))

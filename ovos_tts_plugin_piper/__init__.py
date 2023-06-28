@@ -123,60 +123,112 @@ class PiperTTSPlugin(TTS):
         'upc_pau-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-ca-upc_pau-x-low.tar.gz',
         'vos-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-vi-vivos-x-low.tar.gz'
     }
+    engines = {}
 
     def __init__(self, lang="en-us", config=None):
         super(PiperTTSPlugin, self).__init__(lang, config)
-        model = self.config.get("model") or \
-                self.lang2voices.get(lang) or \
-                self.lang2voices.get(lang.split("-"[0]))
-        if isinstance(model, list):
-            model = model[0]
-
-        if not os.path.isfile(model) and model in self.voice2url:
-            xdg_p = f"{xdg_data_home()}/piper_tts/{model}"
-            if not os.path.isdir(xdg_p):
-                model = self.voice2url[model]
-
-        if model.startswith("http"):
-            m = model.split("/")[-1]
-            xdg_p = f"{xdg_data_home()}/piper_tts/{m.split('.')[0]}"
-
-            model_tar = f"{xdg_p}/{m}"
-            if not os.path.isfile(model_tar):
-                LOG.info(f"downloading piper model: {model}")
-                os.makedirs(xdg_p, exist_ok=True)
-                data = requests.get(model)
-                with open(model_tar, "wb") as f:
-                    f.write(data.content)
-
-                with tarfile.open(model_tar) as file:
-                    file.extractall(xdg_p)
-            for f in os.listdir(xdg_p):
-                if f.endswith(".onnx"):
-                    model = f"{xdg_p}/{f}"
-                    LOG.debug(f"selected model: {model}")
-                    break
+        if self.voice == "default":
+            if self.lang.startswith("en"):
+                # alan pope is the default english voice of mycroft/OVOS
+                self.voice = "alan-low"
             else:
-                raise FileNotFoundError("onnx model not found")
+                self.voice = self.lang2voices.get(lang) or \
+                             self.lang2voices.get(lang.split("-"[0])) or \
+                             "alan-low"
 
-        self.model = model
-        self.model_json = self.config.get("model_json") or self.model + ".json"
         self.use_cuda = self.config.get("use_cuda", False)
-        self.engine = Piper(self.model, config_path=self.model_json, use_cuda=self.use_cuda)
-
-        self.speaker = self.config.get("speaker")  # "Id of speaker (default: 0)"
         self.noise_scale = self.config.get("noise-scale")  # generator noise
         self.length_scale = self.config.get("length-scale")  # Phoneme length
         self.noise_w = self.config.get("noise-w")  # Phoneme width noise
-        self.g2p = PiperG2P(self.engine)
 
-    def get_tts(self, sentence, wav_file, lang=None, speaker=None):
+        # pre-load models
+        preload_voices = self.config.get("preload_voices") or []
+        preload_langs = self.config.get("preload_langs") or [self.lang]
+
+        for lang in preload_langs:
+            if lang not in self.lang2voices:
+                lang = lang.split("-")[0]
+            voice = self.lang2voices.get(lang)
+            if voice and voice not in preload_voices:
+                preload_voices.append(voice)
+
+        for voice in preload_voices:
+            self.get_model(voice=voice)
+
+    def get_model(self, lang=None, voice=None, speaker=None):
+
+        # find default voice  (should be called model not voice....)
+        if voice is None and lang is not None:
+            if lang.startswith("en"):
+                # alan pope is the default english voice of mycroft/OVOS
+                voice = "alan-low"
+            else:
+                voice = self.lang2voices.get(lang) or \
+                        self.lang2voices.get(lang.split("-"[0]))
+
+        voice = voice or self.voice
+
+        if isinstance(voice, list):
+            voice = voice[0]
+
+        # find speaker  (should be called voice not speaker...)
+        if "#" in voice:
+            voice, speaker2 = voice.split("#")
+            try:
+                speaker2 = int(speaker2)
+                if speaker is not None:
+                    LOG.warning("requested voice and speaker args conflict, "
+                                "ignoring requested speaker in favor of speaker defined in voice string")
+                    speaker = speaker2
+            except:
+                LOG.warning("invalid speaker requested in voice string, ignoring it")
+
+        speaker = speaker or 0  # default for this model
+
+        # pre-loaded models
+        if voice in PiperTTSPlugin.engines:
+            return PiperTTSPlugin.engines[voice], speaker
+
+        # find requested voice
+        if voice in self.voice2url:
+            xdg_p = f"{xdg_data_home()}/piper_tts/{voice}"
+            if not os.path.isdir(xdg_p):
+                url = self.voice2url[voice]
+
+                m = url.split("/")[-1]
+                xdg_p = f"{xdg_data_home()}/piper_tts/{m.split('.')[0]}"
+
+                model_tar = f"{xdg_p}/{m}"
+                if not os.path.isfile(model_tar):
+                    LOG.info(f"downloading piper model: {url}")
+                    os.makedirs(xdg_p, exist_ok=True)
+                    # TODO - streaming download
+                    data = requests.get(url)
+                    with open(model_tar, "wb") as f:
+                        f.write(data.content)
+                    with tarfile.open(model_tar) as file:
+                        file.extractall(xdg_p)
+
+                for f in os.listdir(xdg_p):
+                    if f.endswith(".onnx"):
+                        model = f"{xdg_p}/{f}"
+                        engine = Piper(model, config_path=model + ".json", use_cuda=self.use_cuda)
+                        LOG.debug(f"loaded model: {model}")
+                        PiperTTSPlugin.engines[voice] = engine
+                        return engine, speaker
+                else:
+                    raise FileNotFoundError("onnx model not found")
+        else:
+            raise ValueError(f"invalid voice: {voice}")
+
+    def get_tts(self, sentence, wav_file, lang=None, voice=None, speaker=None):
         """Generate WAV and phonemes.
 
         Arguments:
             sentence (str): sentence to generate audio for
             wav_file (str): output file
             lang (str): optional lang override
+            voice (str): optional voice override
             speaker (int): optional speaker override
 
         Returns:
@@ -187,15 +239,18 @@ class PiperTTSPlugin(TTS):
         if isinstance(speaker, dict):
             LOG.warning("Legacy Neon TTS signature found, pass speaker as a str")
             speaker = None
-        wav_bytes = self.engine.synthesize(sentence,
-                                           speaker_id=speaker or self.speaker,
-                                           length_scale=self.length_scale,
-                                           noise_scale=self.noise_scale,
-                                           noise_w=self.noise_w)
+
+        engine, speaker = self.get_model(lang, voice, speaker)
+
+        wav_bytes = engine.synthesize(sentence,
+                                      speaker_id=speaker,
+                                      length_scale=self.length_scale,
+                                      noise_scale=self.noise_scale,
+                                      noise_w=self.noise_w)
         with open(wav_file, "wb") as f:
             f.write(wav_bytes)
 
-        phonemes = self.g2p.utterance2arpa(sentence, lang, ignore_oov=True)
+        phonemes = PiperG2P(engine).utterance2arpa(sentence, lang, ignore_oov=True)
         phonemes = " ".join([f"{p}:0.4" for p in phonemes])
 
         return wav_file, phonemes
@@ -212,6 +267,7 @@ PiperTTSPluginConfig = {
 
 if __name__ == "__main__":
     config = {}
-    config["model"] = "alan-low"
+    config["lang"] = "en-us"
     e = PiperTTSPlugin(config=config)
-    e.get_tts( "one oh clock", "hello.wav")
+    e.get_tts("one oh clock", "hello.wav")
+    e.get_tts("one oh clock", "libritts-high.wav", voice="libritts-high")
