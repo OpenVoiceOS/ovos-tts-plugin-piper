@@ -2,7 +2,19 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a2...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a3...HEAD)
+
+**Implemented enhancements:**
+
+- feat/runtime\_voices [\#6](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/6) ([JarbasAl](https://github.com/JarbasAl))
+
+**Closed issues:**
+
+- "model" argument not handled [\#5](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/5)
+
+## [V0.0.1a3](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.1a3) (2023-06-16)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a2...V0.0.1a3)
 
 **Merged pull requests:**
 
