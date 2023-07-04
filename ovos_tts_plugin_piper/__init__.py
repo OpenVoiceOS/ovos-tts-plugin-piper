@@ -10,16 +10,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import io
 import os
+import re
 import tarfile
+import wave
 
 import requests
 from ovos_plugin_manager.templates.g2p import Grapheme2PhonemePlugin
 from ovos_plugin_manager.templates.tts import TTS
+from ovos_tts_plugin_piper.engine import Piper
 from ovos_utils.log import LOG
 from ovos_utils.xdg_utils import xdg_data_home
-
-from ovos_tts_plugin_piper.engine import Piper
 
 
 class PiperG2P(Grapheme2PhonemePlugin):
@@ -221,6 +223,36 @@ class PiperTTSPlugin(TTS):
         else:
             raise ValueError(f"invalid voice: {voice}")
 
+    def _piper_synth(self, text: str, lang: str, voice: str, speaker: int) -> bytes:
+        """Synthesize audio from text and return WAV bytes"""
+
+        engine, speaker = self.get_model(lang, voice, speaker)
+        phonemes = PiperG2P(engine).utterance2arpa(text, lang, ignore_oov=True)
+        phonemes = " ".join([f"{p}:0.4" for p in phonemes])
+
+        sents = re.split('(?<=[.!?]) +', text)
+
+        results = [engine.synthesize(sentence,
+                                     speaker_id=speaker,
+                                     length_scale=self.length_scale,
+                                     noise_scale=self.noise_scale,
+                                     noise_w=self.noise_w)
+                   for sentence in [text]]
+
+        with io.BytesIO() as wav_io:
+            wav_file: wave.Wave_write = wave.open(wav_io, "wb")
+            wav_file.setframerate(engine.config.sample_rate)
+            wav_file.setsampwidth(2)
+            wav_file.setnchannels(1)
+
+            with wav_file:
+                for audio_bytes in results:
+                    # Add audio to existing WAV file
+                    wav_file.writeframes(audio_bytes)
+            wav_bytes = wav_io.getvalue()
+
+        return wav_bytes, phonemes
+
     def get_tts(self, sentence, wav_file, lang=None, voice=None, speaker=None):
         """Generate WAV and phonemes.
 
@@ -240,18 +272,9 @@ class PiperTTSPlugin(TTS):
             LOG.warning("Legacy Neon TTS signature found, pass speaker as a str")
             speaker = None
 
-        engine, speaker = self.get_model(lang, voice, speaker)
-
-        wav_bytes = engine.synthesize(sentence,
-                                      speaker_id=speaker,
-                                      length_scale=self.length_scale,
-                                      noise_scale=self.noise_scale,
-                                      noise_w=self.noise_w)
+        wav_bytes, phonemes = self._piper_synth(sentence, lang, voice, speaker)
         with open(wav_file, "wb") as f:
             f.write(wav_bytes)
-
-        phonemes = PiperG2P(engine).utterance2arpa(sentence, lang, ignore_oov=True)
-        phonemes = " ".join([f"{p}:0.4" for p in phonemes])
 
         return wav_file, phonemes
 
@@ -269,5 +292,5 @@ if __name__ == "__main__":
     config = {}
     config["lang"] = "en-us"
     e = PiperTTSPlugin(config=config)
-    e.get_tts("one oh clock", "hello.wav")
+    e.get_tts("one oh clock? yes! it is one on the clock", "hello.wav")
     e.get_tts("one oh clock", "libritts-high.wav", voice="libritts-high")
