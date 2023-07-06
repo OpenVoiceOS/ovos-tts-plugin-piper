@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a3...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a4...HEAD)
+
+**Fixed bugs:**
+
+- feat/split\_sents [\#7](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/7) ([JarbasAl](https://github.com/JarbasAl))
+
+## [V0.0.1a4](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.1a4) (2023-06-28)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a3...V0.0.1a4)
 
 **Implemented enhancements:**
 
