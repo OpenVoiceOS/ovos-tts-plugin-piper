@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a4...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a5...HEAD)
+
+**Fixed bugs:**
+
+- no phonemes [\#8](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/8) ([JarbasAl](https://github.com/JarbasAl))
+
+## [V0.0.1a5](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.1a5) (2023-07-06)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a4...V0.0.1a5)
 
 **Fixed bugs:**
 
