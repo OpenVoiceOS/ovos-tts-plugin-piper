@@ -227,8 +227,6 @@ class PiperTTSPlugin(TTS):
         """Synthesize audio from text and return WAV bytes"""
 
         engine, speaker = self.get_model(lang, voice, speaker)
-        phonemes = PiperG2P(engine).utterance2arpa(text, lang, ignore_oov=True)
-        phonemes = " ".join([f"{p}:0.4" for p in phonemes])
 
         sents = re.split('(?<=[.!?]) +', text)
 
@@ -251,7 +249,7 @@ class PiperTTSPlugin(TTS):
                     wav_file.writeframes(audio_bytes)
             wav_bytes = wav_io.getvalue()
 
-        return wav_bytes, phonemes
+        return wav_bytes
 
     def get_tts(self, sentence, wav_file, lang=None, voice=None, speaker=None):
         """Generate WAV and phonemes.
@@ -272,11 +270,11 @@ class PiperTTSPlugin(TTS):
             LOG.warning("Legacy Neon TTS signature found, pass speaker as a str")
             speaker = None
 
-        wav_bytes, phonemes = self._piper_synth(sentence, lang, voice, speaker)
+        wav_bytes = self._piper_synth(sentence, lang, voice, speaker)
         with open(wav_file, "wb") as f:
             f.write(wav_bytes)
 
-        return wav_file, phonemes
+        return wav_file, None
 
     def available_languages(self) -> set:
         return set(self.lang2voices.keys())
