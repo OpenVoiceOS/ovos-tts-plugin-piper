@@ -72,6 +72,10 @@ class PiperTTSPlugin(TTS):
         'no': ['talesyntese-medium'],
         'pl': ['mls_6892-low'],
         'pt-br': ['edresson-low'],
+        'ru': ['irina-medium',
+               'denis-medium',
+               'dmitri-medium',
+               'ruslan-medium'],
         'uk': ['lada-x-low'],
         'vi': ['25hours-single-low', 'vos-x-low'],
         'zh-cn': ['huayan-x-low']}
@@ -81,6 +85,8 @@ class PiperTTSPlugin(TTS):
         'amy-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-amy-low.tar.gz',
         'carlfm-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-es-carlfm-x-low.tar.gz',
         'danny-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-danny-low.tar.gz',
+        'denis-medium': 'https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/denis/medium/ru_RU-denis-medium.onnx',
+        'dmitri-medium': 'https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/dmitri/medium/ru_RU-dmitri-medium.onnx',
         'edresson-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-pt-br-edresson-low.tar.gz',
         'eva_k-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-de-eva_k-x-low.tar.gz',
         'gilles-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-fr-gilles-low.tar.gz',
@@ -88,6 +94,7 @@ class PiperTTSPlugin(TTS):
         'google-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-ne-google-x-low.tar.gz',
         'harri-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-fi-harri-low.tar.gz',
         'huayan-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-zh-cn-huayan-x-low.tar.gz',
+        'irina-medium': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-ru-irinia-medium.tar.gz',
         'iseke-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-kk-iseke-x-low.tar.gz',
         'issai-high': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-kk-issai-high.tar.gz',
         'karlsson-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-de-karlsson-low.tar.gz',
@@ -113,6 +120,7 @@ class PiperTTSPlugin(TTS):
         'rdh-medium': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-nl-rdh-medium.tar.gz',
         'rdh-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-nl-rdh-x-low.tar.gz',
         'riccardo_fasol-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-it-riccardo_fasol-x-low.tar.gz',
+        'ruslan-medium': 'https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/ruslan/medium/ru_RU-ruslan-medium.onnx',
         'ryan-high': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-ryan-high.tar.gz',
         'ryan-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-ryan-low.tar.gz',
         'ryan-medium': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-ryan-medium.tar.gz',
@@ -135,8 +143,11 @@ class PiperTTSPlugin(TTS):
                 self.voice = "alan-low"
             else:
                 self.voice = self.lang2voices.get(lang) or \
-                             self.lang2voices.get(lang.split("-"[0])) or \
+                             self.lang2voices.get(lang.split("-")[0]) or \
                              "alan-low"
+
+        if isinstance(self.voice, list):
+            self.voice = self.voice[0]
 
         self.use_cuda = self.config.get("use_cuda", False)
         self.noise_scale = self.config.get("noise-scale")  # generator noise
@@ -166,7 +177,7 @@ class PiperTTSPlugin(TTS):
                 voice = "alan-low"
             else:
                 voice = self.lang2voices.get(lang) or \
-                        self.lang2voices.get(lang.split("-"[0]))
+                        self.lang2voices.get(lang.split("-")[0])
 
         voice = voice or self.voice
 
@@ -200,16 +211,22 @@ class PiperTTSPlugin(TTS):
                 m = url.split("/")[-1]
                 xdg_p = f"{xdg_data_home()}/piper_tts/{m.split('.')[0]}"
 
-                model_tar = f"{xdg_p}/{m}"
-                if not os.path.isfile(model_tar):
+                model_file = f"{xdg_p}/{m}"
+                if not os.path.isfile(model_file):
                     LOG.info(f"downloading piper model: {url}")
                     os.makedirs(xdg_p, exist_ok=True)
                     # TODO - streaming download
                     data = requests.get(url)
-                    with open(model_tar, "wb") as f:
+                    with open(model_file, "wb") as f:
                         f.write(data.content)
-                    with tarfile.open(model_tar) as file:
-                        file.extractall(xdg_p)
+
+                    if url.endswith(".onnx"):
+                        json_data = requests.get(url + '.json')
+                        with open(model_file + '.json', "wb") as f:
+                            f.write(json_data.content)
+                    else:
+                        with tarfile.open(model_file) as file:
+                            file.extractall(xdg_p)
 
                 for f in os.listdir(xdg_p):
                     if f.endswith(".onnx"):
@@ -265,7 +282,7 @@ class PiperTTSPlugin(TTS):
             tuple ((str) file location, (str) generated phonemes)
         """
         lang = lang or self.lang
-        # HACK: bug in some neon-core versions - neon_audio.tts.neon:_get_tts:198 - INFO - Legacy Neon TTS signature found 
+        # HACK: bug in some neon-core versions - neon_audio.tts.neon:_get_tts:198 - INFO - Legacy Neon TTS signature found
         if isinstance(speaker, dict):
             LOG.warning("Legacy Neon TTS signature found, pass speaker as a str")
             speaker = None
