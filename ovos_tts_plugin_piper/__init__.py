@@ -72,7 +72,10 @@ class PiperTTSPlugin(TTS):
         'no': ['talesyntese-medium'],
         'pl': ['mls_6892-low'],
         'pt-br': ['edresson-low'],
-        'ru': ['irina-medium'],
+        'ru': ['irina-medium',
+               'denis-medium',
+               'dmitri-medium',
+               'ruslan-medium'],
         'uk': ['lada-x-low'],
         'vi': ['25hours-single-low', 'vos-x-low'],
         'zh-cn': ['huayan-x-low']}
@@ -82,6 +85,8 @@ class PiperTTSPlugin(TTS):
         'amy-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-amy-low.tar.gz',
         'carlfm-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-es-carlfm-x-low.tar.gz',
         'danny-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-danny-low.tar.gz',
+        'denis-medium': 'https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/denis/medium/ru_RU-denis-medium.onnx',
+        'dmitri-medium': 'https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/dmitri/medium/ru_RU-dmitri-medium.onnx',
         'edresson-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-pt-br-edresson-low.tar.gz',
         'eva_k-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-de-eva_k-x-low.tar.gz',
         'gilles-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-fr-gilles-low.tar.gz',
@@ -115,6 +120,7 @@ class PiperTTSPlugin(TTS):
         'rdh-medium': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-nl-rdh-medium.tar.gz',
         'rdh-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-nl-rdh-x-low.tar.gz',
         'riccardo_fasol-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-it-riccardo_fasol-x-low.tar.gz',
+        'ruslan-medium': 'https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/ruslan/medium/ru_RU-ruslan-medium.onnx',
         'ryan-high': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-ryan-high.tar.gz',
         'ryan-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-ryan-low.tar.gz',
         'ryan-medium': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-ryan-medium.tar.gz',
@@ -205,16 +211,22 @@ class PiperTTSPlugin(TTS):
                 m = url.split("/")[-1]
                 xdg_p = f"{xdg_data_home()}/piper_tts/{m.split('.')[0]}"
 
-                model_tar = f"{xdg_p}/{m}"
-                if not os.path.isfile(model_tar):
+                model_file = f"{xdg_p}/{m}"
+                if not os.path.isfile(model_file):
                     LOG.info(f"downloading piper model: {url}")
                     os.makedirs(xdg_p, exist_ok=True)
                     # TODO - streaming download
                     data = requests.get(url)
-                    with open(model_tar, "wb") as f:
+                    with open(model_file, "wb") as f:
                         f.write(data.content)
-                    with tarfile.open(model_tar) as file:
-                        file.extractall(xdg_p)
+
+                    if url.endswith(".onnx"):
+                        json_data = requests.get(url + '.json')
+                        with open(model_file + '.json', "wb") as f:
+                            f.write(json_data.content)
+                    else:
+                        with tarfile.open(model_file) as file:
+                            file.extractall(xdg_p)
 
                 for f in os.listdir(xdg_p):
                     if f.endswith(".onnx"):
