@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a5...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a6...HEAD)
+
+**Implemented enhancements:**
+
+- Add Russian voices [\#11](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/11) ([putnik](https://github.com/putnik))
+
+## [V0.0.1a6](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.1a6) (2023-07-06)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a5...V0.0.1a6)
 
 **Fixed bugs:**
 
