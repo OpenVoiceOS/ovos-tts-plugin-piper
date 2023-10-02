@@ -72,6 +72,7 @@ class PiperTTSPlugin(TTS):
         'no': ['talesyntese-medium'],
         'pl': ['mls_6892-low'],
         'pt-br': ['edresson-low'],
+        'ru': ['irina-medium'],
         'uk': ['lada-x-low'],
         'vi': ['25hours-single-low', 'vos-x-low'],
         'zh-cn': ['huayan-x-low']}
@@ -88,6 +89,7 @@ class PiperTTSPlugin(TTS):
         'google-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-ne-google-x-low.tar.gz',
         'harri-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-fi-harri-low.tar.gz',
         'huayan-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-zh-cn-huayan-x-low.tar.gz',
+        'irina-medium': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-ru-irinia-medium.tar.gz',
         'iseke-x-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-kk-iseke-x-low.tar.gz',
         'issai-high': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-kk-issai-high.tar.gz',
         'karlsson-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-de-karlsson-low.tar.gz',
@@ -135,8 +137,11 @@ class PiperTTSPlugin(TTS):
                 self.voice = "alan-low"
             else:
                 self.voice = self.lang2voices.get(lang) or \
-                             self.lang2voices.get(lang.split("-"[0])) or \
+                             self.lang2voices.get(lang.split("-")[0]) or \
                              "alan-low"
+
+        if isinstance(self.voice, list):
+            self.voice = self.voice[0]
 
         self.use_cuda = self.config.get("use_cuda", False)
         self.noise_scale = self.config.get("noise-scale")  # generator noise
@@ -166,7 +171,7 @@ class PiperTTSPlugin(TTS):
                 voice = "alan-low"
             else:
                 voice = self.lang2voices.get(lang) or \
-                        self.lang2voices.get(lang.split("-"[0]))
+                        self.lang2voices.get(lang.split("-")[0])
 
         voice = voice or self.voice
 
@@ -265,7 +270,7 @@ class PiperTTSPlugin(TTS):
             tuple ((str) file location, (str) generated phonemes)
         """
         lang = lang or self.lang
-        # HACK: bug in some neon-core versions - neon_audio.tts.neon:_get_tts:198 - INFO - Legacy Neon TTS signature found 
+        # HACK: bug in some neon-core versions - neon_audio.tts.neon:_get_tts:198 - INFO - Legacy Neon TTS signature found
         if isinstance(speaker, dict):
             LOG.warning("Legacy Neon TTS signature found, pass speaker as a str")
             speaker = None
