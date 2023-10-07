@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a6...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a7...HEAD)
+
+**Implemented enhancements:**
+
+- Add all models from rhasspy/piper-voices [\#12](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/12) ([putnik](https://github.com/putnik))
+
+## [V0.0.1a7](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.1a7) (2023-10-02)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a6...V0.0.1a7)
 
 **Implemented enhancements:**
 
