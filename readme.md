@@ -20,7 +20,7 @@ you can pass a model name alias, eg "alan-low"
   "tts": {
     "module": "ovos-tts-plugin-piper",
     "ovos-tts-plugin-piper": {
-      "model": "alan-low"
+      "voice": "alan-low"
     }
   }
 ```
