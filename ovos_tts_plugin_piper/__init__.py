@@ -10,18 +10,73 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import io
+import json
 import os
-import re
-import requests
 import tarfile
 import wave
+from typing import List, Optional
 
-from ovos_plugin_manager.templates.g2p import Grapheme2PhonemePlugin
+import numpy as np
+import onnxruntime
+import requests
 from ovos_plugin_manager.templates.tts import TTS
-from ovos_tts_plugin_piper.engine import Piper
 from ovos_utils.log import LOG
 from ovos_utils.xdg_utils import xdg_data_home
+from piper.config import PiperConfig
+from piper.voice import PiperVoice as _PV
+from piper.util import audio_float_to_int16
+
+
+class PiperVoice(_PV):
+
+    # working around upstream bug in single speaker models
+    def synthesize_ids_to_raw(
+            self,
+            phoneme_ids: List[int],
+            speaker_id: Optional[int] = None,
+            length_scale: Optional[float] = None,
+            noise_scale: Optional[float] = None,
+            noise_w: Optional[float] = None,
+    ) -> bytes:
+        """Synthesize raw audio from phoneme ids."""
+        if length_scale is None:
+            length_scale = self.config.length_scale
+
+        if noise_scale is None:
+            noise_scale = self.config.noise_scale
+
+        if noise_w is None:
+            noise_w = self.config.noise_w
+
+        phoneme_ids_array = np.expand_dims(np.array(phoneme_ids, dtype=np.int64), 0)
+        phoneme_ids_lengths = np.array([phoneme_ids_array.shape[1]], dtype=np.int64)
+        scales = np.array(
+            [noise_scale, length_scale, noise_w],
+            dtype=np.float32,
+        )
+
+        args = {
+            "input": phoneme_ids_array,
+            "input_lengths": phoneme_ids_lengths,
+            "scales": scales
+        }
+
+        if self.config.num_speakers <= 1:
+            speaker_id = None
+
+        if (self.config.num_speakers > 1) and (speaker_id is None):
+            # Default speaker
+            speaker_id = 0
+
+        if speaker_id is not None:
+            sid = np.array([speaker_id], dtype=np.int64)
+            args["sid"] = sid  # <- this is the bug fix, upstream passes "sid": None to args
+            # which crashes single speaker models
+
+        # Synthesize through Onnx
+        audio = self.session.run(None, args, )[0].squeeze((0, 1))
+        audio = audio_float_to_int16(audio.squeeze())
+        return audio.tobytes()
 
 
 class PiperTTSPlugin(TTS):
@@ -283,7 +338,21 @@ class PiperTTSPlugin(TTS):
                 for f in os.listdir(xdg_p):
                     if f.endswith(".onnx"):
                         model = f"{xdg_p}/{f}"
-                        engine = Piper(model, config_path=model + ".json", use_cuda=self.use_cuda)
+
+                        with open(model + ".json", "r", encoding="utf-8") as config_file:
+                            config_dict = json.load(config_file)
+
+                        engine = PiperVoice(
+                            config=PiperConfig.from_dict(config_dict),
+                            session=onnxruntime.InferenceSession(
+                                str(model),
+                                sess_options=onnxruntime.SessionOptions(),
+                                providers=["CPUExecutionProvider"]
+                                if not self.use_cuda
+                                else ["CUDAExecutionProvider"],
+                            ),
+                        )
+
                         LOG.debug(f"loaded model: {model}")
                         PiperTTSPlugin.engines[voice] = engine
                         return engine, speaker
@@ -291,34 +360,6 @@ class PiperTTSPlugin(TTS):
                     raise FileNotFoundError("onnx model not found")
         else:
             raise ValueError(f"invalid voice: {voice}")
-
-    def _piper_synth(self, text: str, lang: str, voice: str, speaker: int) -> bytes:
-        """Synthesize audio from text and return WAV bytes"""
-
-        engine, speaker = self.get_model(lang, voice, speaker)
-
-        sents = re.split('(?<=[.!?]) +', text)
-
-        results = [engine.synthesize(sentence,
-                                     speaker_id=speaker,
-                                     length_scale=self.length_scale,
-                                     noise_scale=self.noise_scale,
-                                     noise_w=self.noise_w)
-                   for sentence in [text]]
-
-        with io.BytesIO() as wav_io:
-            wav_file: wave.Wave_write = wave.open(wav_io, "wb")
-            wav_file.setframerate(engine.config.sample_rate)
-            wav_file.setsampwidth(2)
-            wav_file.setnchannels(1)
-
-            with wav_file:
-                for audio_bytes in results:
-                    # Add audio to existing WAV file
-                    wav_file.writeframes(audio_bytes)
-            wav_bytes = wav_io.getvalue()
-
-        return wav_bytes
 
     def get_tts(self, sentence, wav_file, lang=None, voice=None, speaker=None):
         """Generate WAV and phonemes.
@@ -339,9 +380,13 @@ class PiperTTSPlugin(TTS):
             LOG.warning("Legacy Neon TTS signature found, pass speaker as a str")
             speaker = None
 
-        wav_bytes = self._piper_synth(sentence, lang, voice, speaker)
-        with open(wav_file, "wb") as f:
-            f.write(wav_bytes)
+        engine, speaker = self.get_model(lang, voice, speaker)
+        with wave.open(wav_file, "wb") as f:
+            engine.synthesize(sentence, f,
+                              speaker_id=speaker,
+                              length_scale=self.length_scale,
+                              noise_scale=self.noise_scale,
+                              noise_w=self.noise_w)
 
         return wav_file, None
 
