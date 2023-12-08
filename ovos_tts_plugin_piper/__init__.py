@@ -24,17 +24,6 @@ from ovos_utils.log import LOG
 from ovos_utils.xdg_utils import xdg_data_home
 
 
-class PiperG2P(Grapheme2PhonemePlugin):
-    piper = None
-
-    def __init__(self, piper_engine, *args, **kwargs):
-        self.piper = piper_engine
-        super().__init__(*args, **kwargs)
-
-    def get_ipa(self, word, lang=None, ignore_oov=False):
-        return self.piper.phonemizer.phonemize(word, phoneme_separator=" ").split(" ")
-
-
 class PiperTTSPlugin(TTS):
     """Interface to Piper TTS."""
     lang2voices = {
@@ -93,7 +82,7 @@ class PiperTTSPlugin(TTS):
                'mc_speech-medium',
                'mls_6892-low'],
         'pt-br': ['edresson-low', 'faber-medium'],
-        'pt-pt': ['tugao-medium'],
+        'pt': ['tugao-medium'],
         'ro': ['mihai-medium'],
         'ru': ['irina-medium',
                'denis-medium',
