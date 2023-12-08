@@ -39,7 +39,7 @@ class Piper:
             config_path = f"{model_path}.json"
 
         self.config = load_config(config_path)
-        self.phonemizer = Phonemizer(self.config.espeak_voice)
+
         self.onnx_options = onnxruntime.SessionOptions()
         self.onnx_options.intra_op_num_threads = os.cpu_count() - 1
         self.model = onnxruntime.InferenceSession(
@@ -68,7 +68,8 @@ class Piper:
         if noise_w is None:
             noise_w = self.config.noise_w
 
-        phonemes_str = self.phonemizer.phonemize(text)
+        phonemizer = Phonemizer(self.config.espeak_voice)
+        phonemes_str = phonemizer.phonemize(text)
         phonemes = [_BOS] + list(phonemes_str)
         phoneme_ids: List[int] = []
 
