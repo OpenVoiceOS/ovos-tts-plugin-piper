@@ -2,7 +2,20 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a7...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a8...HEAD)
+
+**Closed issues:**
+
+- TypeError: 'NoneType' object is not callable [\#14](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/14)
+
+**Merged pull requests:**
+
+- moves to upstream piper package [\#15](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/15) ([JarbasAl](https://github.com/JarbasAl))
+- fix: incorrect config example [\#13](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/13) ([mikejgray](https://github.com/mikejgray))
+
+## [V0.0.1a8](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.1a8) (2023-10-07)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a7...V0.0.1a8)
 
 **Implemented enhancements:**
 
