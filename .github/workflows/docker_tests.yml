@@ -40,6 +40,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/mikejgray/piper-tts-server:dev
+          tags: ghcr.io/${{ github.repository_owner }}/piper-tts-server:${{ github.head_ref }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
