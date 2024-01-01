@@ -6,21 +6,24 @@ on:
     branches:
       - dev
     paths-ignore:
-      - 'ovos_tts_plugin_piper/version.py'
-      - 'test/**'
-      - 'examples/**'
-      - '.github/**'
-      - '.gitignore'
-      - 'LICENSE'
-      - 'CHANGELOG.md'
-      - 'MANIFEST.in'
-      - 'readme.md'
-      - 'scripts/**'
+      - "ovos_tts_plugin_piper/version.py"
+      - "test/**"
+      - "examples/**"
+      - ".github/**"
+      - ".gitignore"
+      - "LICENSE"
+      - "CHANGELOG.md"
+      - "MANIFEST.in"
+      - "readme.md"
+      - "scripts/**"
   workflow_dispatch:
 
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - uses: actions/checkout@v2
         with:
