@@ -1,12 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/mikejgray/ovos-tts-plugin-piper/tree/HEAD)
+## [V0.0.1a10](https://github.com/mikejgray/ovos-tts-plugin-piper/tree/V0.0.1a10) (2024-01-01)
 
-[Full Changelog](https://github.com/mikejgray/ovos-tts-plugin-piper/compare/V0.0.1a1...HEAD)
-
-**Merged pull requests:**
-
-- feat: docker [\#1](https://github.com/mikejgray/ovos-tts-plugin-piper/pull/1) ([mikejgray](https://github.com/mikejgray))
+[Full Changelog](https://github.com/mikejgray/ovos-tts-plugin-piper/compare/V0.0.1a1...V0.0.1a10)
 
 ## [V0.0.1a1](https://github.com/mikejgray/ovos-tts-plugin-piper/tree/V0.0.1a1) (2023-04-30)
 
