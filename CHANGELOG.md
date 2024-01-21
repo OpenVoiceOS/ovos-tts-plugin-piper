@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/HEAD)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1...HEAD)
+
+**Merged pull requests:**
+
+- feat: upgrade to piper-tts 1.2.0 and remove support for Python \< 3.9 [\#22](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/22) ([dblencowe](https://github.com/dblencowe))
+
+## [V0.0.1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.1) (2024-01-21)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a11...V0.0.1)
+
 ## [V0.0.1a11](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.1a11) (2024-01-21)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a10...V0.0.1a11)
