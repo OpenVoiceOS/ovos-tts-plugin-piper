@@ -2,7 +2,23 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a8...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a9...HEAD)
+
+**Implemented enhancements:**
+
+- adds en-gb-alba model [\#19](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/19) ([dblencowe](https://github.com/dblencowe))
+
+**Closed issues:**
+
+- Doesn't handle the "?" properly [\#16](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/16)
+
+**Merged pull requests:**
+
+- WIP: fix: fixes confict between piper-tts versions [\#20](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/20) ([dblencowe](https://github.com/dblencowe))
+
+## [V0.0.1a9](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.1a9) (2023-12-09)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a8...V0.0.1a9)
 
 **Closed issues:**
 
