@@ -96,7 +96,7 @@ class PiperTTSPlugin(TTS):
                'thorsten-medium',
                'thorsten_emotional-medium'],
         'el': ['rapunzelina-low'],
-        'en-gb': ['alan-low', 'southern_english_female-low'],
+        'en-gb': ['alan-low', 'alba-medium', 'southern_english_female-low'],
         'en-us': ['amy-low',
                   'danny-low',
                   'kathleen-low',
@@ -154,6 +154,7 @@ class PiperTTSPlugin(TTS):
     voice2url = {
         '25hours-single-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-vi-25hours-single-low.tar.gz',
         'alan-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-gb-alan-low.tar.gz',
+        'alba-medium': 'https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_GB/alba/medium/en_GB-alba-medium.onnx',
         'ald-medium': 'https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_MX/ald/medium/es_MX-ald-medium.onnx',
         'amy-low': 'https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-amy-low.tar.gz',
         'anna-medium': 'https://huggingface.co/rhasspy/piper-voices/resolve/main/hu/hu_HU/anna/medium/hu_HU-anna-medium.onnx',
