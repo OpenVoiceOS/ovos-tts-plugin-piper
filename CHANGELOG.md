@@ -1,8 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/HEAD)
+## [V0.0.1a11](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.1a11) (2024-01-21)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a10...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1a10...V0.0.1a11)
 
 **Implemented enhancements:**
 
