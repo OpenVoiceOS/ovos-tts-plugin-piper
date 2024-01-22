@@ -1,2 +1,2 @@
 ovos-plugin-manager>=0.0.5
-piper-tts==1.2.0
+piper-tts>=1.1.0
