@@ -1,6 +1,6 @@
 ## Description
 
-OVOS TTS plugin for [piper](https://github.com/rhasspy/piper)
+[OpenVoiceOS (OVOS)](https://openvoiceos.org) TTS plugin for [piper](https://github.com/rhasspy/piper)
 
 ## Install
 
