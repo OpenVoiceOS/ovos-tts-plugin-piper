@@ -18,3 +18,6 @@ dist
 
 # Created by unit tests
 .pytest_cache/
+__pycache__
+hello.wav
+test/models
