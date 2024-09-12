@@ -1,3 +1,2 @@
 ovos-plugin-manager>=0.0.5
-piper-phonemize~=1.0.0
-piper-tts==1.1.0
+piper-tts==1.2.0
