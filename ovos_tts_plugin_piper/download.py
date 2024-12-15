@@ -50,7 +50,7 @@ def get_available_voices(update_voices: bool = False) -> Dict[str, Any]:
                 shutil.copyfileobj(response, download_file)
         except Exception as e:
             LOG.error(f"Failed to download {voices_url}: {e}")
-            raise e
+
     # Prefer downloaded file to embedded
     voices_embedded = _DIR / "voices.json"
     voices_path = voices_download if voices_download.exists() else voices_embedded

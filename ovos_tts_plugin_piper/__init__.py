@@ -18,7 +18,7 @@ from ovos_plugin_manager.templates.tts import TTS
 from ovos_utils.lang import standardize_lang_tag
 from ovos_utils.log import LOG
 
-from ovos_tts_plugin_piper.download import LANG2VOICES, SHORTNAMES, get_voice_files, get_lang_voices, get_default_voice
+from ovos_tts_plugin_piper.download import LANG2VOICES, SHORTNAMES, VoiceNotFoundError, get_voice_files, get_lang_voices, get_default_voice
 from ovos_tts_plugin_piper.piper import PiperVoice, PiperConfig
 
 
@@ -89,7 +89,11 @@ class PiperTTSPlugin(TTS):
         if voice in PiperTTSPlugin.engines:
             return PiperTTSPlugin.engines[voice], speaker
 
-        model, model_config = get_voice_files(voice)
+        try:
+            model, model_config = get_voice_files(voice)
+        except VoiceNotFoundError as e:
+            LOG.error(f"Voice files for '{voice}' not found: {e}")
+            raise
 
         with open(model_config, "r", encoding="utf-8") as config_file:
             config_dict = json.load(config_file)
