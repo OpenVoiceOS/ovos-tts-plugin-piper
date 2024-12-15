@@ -52,7 +52,7 @@ class PiperTTSPlugin(TTS):
         self.noise_w = self.config.get("noise-w")  # Phoneme width noise
 
         # pre-load models
-        preload_voices = self.config.get("preload_voices") or []
+        preload_voices = self.config.get("preload_voices") or [self.voice]
         preload_langs = self.config.get("preload_langs") or []
 
         for lang in preload_langs:
@@ -177,4 +177,13 @@ if __name__ == "__main__":
     }
     e = PiperTTSPlugin(config=config)
     e.get_tts("hello world", "hello.wav")
-    print(PiperTTSPluginConfig)
+
+    # test all voices
+    for lang, voices in PiperTTSPluginConfig.items():
+        for voice in voices:
+            v = list(voice.keys())[0]
+            print(lang, v)
+            e = PiperTTSPlugin(config={"voice": v, "lang": lang})
+            e.get_tts("test 1 2 3", f"{lang}_{v}.wav",
+                      voice=v, lang=lang)
+
