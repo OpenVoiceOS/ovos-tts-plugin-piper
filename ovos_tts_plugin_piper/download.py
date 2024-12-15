@@ -43,11 +43,14 @@ def get_available_voices(update_voices: bool = False) -> Dict[str, Any]:
         # Download latest voices.json
         voices_url = VOICES_URL.format(file="voices.json")
         LOG.debug("Downloading %s to %s", voices_url, voices_download)
-        with urlopen(voices_url) as response, open(
-                voices_download, "wb"
-        ) as download_file:
-            shutil.copyfileobj(response, download_file)
-
+        try:
+            with urlopen(voices_url) as response, open(
+                    voices_download, "wb"
+            ) as download_file:
+                shutil.copyfileobj(response, download_file)
+        except Exception as e:
+            LOG.error(f"Failed to download {voices_url}: {e}")
+            raise e
     # Prefer downloaded file to embedded
     voices_embedded = _DIR / "voices.json"
     voices_path = voices_download if voices_download.exists() else voices_embedded
@@ -124,13 +127,16 @@ def get_voice_files(name: str) -> Tuple[Path, Path]:
         download_file_path.parent.mkdir(parents=True, exist_ok=True)
 
         LOG.debug("Downloading %s to %s", file_url, download_file_path)
-        with urlopen(quote(file_url, safe=":/")) as response, open(
-                download_file_path, "wb"
-        ) as download_file:
-            shutil.copyfileobj(response, download_file)
-
-        LOG.info("Downloaded %s (%s)", download_file_path, file_url)
-    return find_voice(name)
+        try:
+            with urlopen(quote(file_url, safe=":/")) as response, open(
+                    download_file_path, "wb"
+            ) as download_file:
+                shutil.copyfileobj(response, download_file)
+            LOG.info("Downloaded %s (%s)", download_file_path, file_url)
+        except Exception as e:
+            LOG.error(f"Failed to download {file_url}: {e}")
+            raise VoiceNotFoundError(f"Could not download file {file_name}") from e
+        return find_voice(name)
 
 
 def find_voice(name: str) -> Tuple[Path, Path]:
