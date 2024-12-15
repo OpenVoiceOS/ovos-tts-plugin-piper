@@ -8,13 +8,11 @@
 
 ## Configuration
 
-download models from https://github.com/rhasspy/piper/releases/tag/v0.0.2
+voice models are automatically downloaded from https://huggingface.co/rhasspy/piper-voices into `~/.local/share/piper_tts`
 
-you can also pass an url for a .tar.gz model, and it will be auto downloaded
+full list of voices can be found [here](https://huggingface.co/rhasspy/piper-voices/blob/main/voices.json)
 
-if no model is passed it will be auto selected based on language
-
-you can pass a model name alias, eg "alan-low"
+you can also pass a short name alias without lang code, eg `"alan-low"` instead of `"en_GB-alan-low"`
 
 ```json
   "tts": {
@@ -24,3 +22,4 @@ you can pass a model name alias, eg "alan-low"
     }
   }
 ```
+if no voice is set it will be auto selected based on language

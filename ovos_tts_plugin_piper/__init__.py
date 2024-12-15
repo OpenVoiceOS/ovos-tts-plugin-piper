@@ -154,7 +154,7 @@ PiperTTSPluginConfig = {
 
 if __name__ == "__main__":
     config = {}
-    config["lang"] = "pt-pt"
+    config["lang"] = "en-gb"
     e = PiperTTSPlugin(config=config)
-    e.get_tts("olá mundo", "hello.wav")
+    e.get_tts("hello world", "hello.wav")
     print(PiperTTSPluginConfig)
