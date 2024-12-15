@@ -136,8 +136,7 @@ def get_voice_files(name: str) -> Tuple[Path, Path]:
         except Exception as e:
             LOG.error(f"Failed to download {file_url}: {e}")
             raise VoiceNotFoundError(f"Could not download file {file_name}") from e
-        return find_voice(name)
-
+    return find_voice(name)
 
 def find_voice(name: str) -> Tuple[Path, Path]:
     data_dir = Path(DATA_DIR)
