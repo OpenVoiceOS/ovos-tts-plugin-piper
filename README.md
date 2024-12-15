@@ -23,3 +23,27 @@ you can also pass a short name alias without lang code, eg `"alan-low"` instead 
   }
 ```
 if no voice is set it will be auto selected based on language
+
+you can also define a local path for your own model
+
+```json
+  "tts": {
+    "module": "ovos-tts-plugin-piper",
+    "ovos-tts-plugin-piper": {
+      "model": "/path/to/model.onnx",
+      "model_config": "/path/to/model.onnx.json"
+    }
+  }
+```
+
+or a remote url
+
+```json
+  "tts": {
+    "module": "ovos-tts-plugin-piper",
+    "ovos-tts-plugin-piper": {
+      "model": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx",
+      "model_config": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx.json"
+    }
+  }
+```

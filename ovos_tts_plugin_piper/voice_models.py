@@ -5,8 +5,9 @@ import shutil
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, Set, Tuple, Union, List
-from urllib.request import urlopen
 from urllib.parse import quote
+from urllib.request import urlopen
+
 from langcodes import closest_match, tag_distance
 from ovos_utils.lang import standardize_lang_tag
 from ovos_utils.log import LOG
@@ -16,6 +17,10 @@ VOICES_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main/{file}"
 DATA_DIR = f"{xdg_data_home()}/piper_tts"
 _DIR = Path(__file__).parent
 _SKIP_FILES = {"MODEL_CARD"}
+
+LANG2VOICES = defaultdict(list)
+SHORTNAMES = {}
+LOCALMODELS = {}
 
 
 class VoiceNotFoundError(FileNotFoundError):
@@ -63,6 +68,10 @@ def get_available_voices(update_voices: bool = False) -> Dict[str, Any]:
 def get_voice_files(name: str) -> Tuple[Path, Path]:
     voices_info = get_available_voices()
     name = SHORTNAMES.get(name) or name
+    if name in LOCALMODELS:
+        model_path, model_cfg = LOCALMODELS[name]
+        return Path(model_path), Path(model_cfg)
+
     if name not in voices_info:
         raise VoiceNotFoundError(name)
 
@@ -121,24 +130,30 @@ def get_voice_files(name: str) -> Tuple[Path, Path]:
         file_name = Path(file_path).name
         if file_name in _SKIP_FILES:
             continue
-
         file_url = VOICES_URL.format(file=file_path)
-        download_file_path = data_dir / file_name
-        download_file_path.parent.mkdir(parents=True, exist_ok=True)
-
-        LOG.debug("Downloading %s to %s", file_url, download_file_path)
-        try:
-            with urlopen(quote(file_url, safe=":/")) as response, open(
-                    download_file_path, "wb"
-            ) as download_file:
-                shutil.copyfileobj(response, download_file)
-            LOG.info("Downloaded %s (%s)", download_file_path, file_url)
-        except Exception as e:
-            LOG.error(f"Failed to download {file_url}: {e}")
-            raise VoiceNotFoundError(f"Could not download file {file_name}") from e
+        _download_file(file_url, data_dir / file_name, file_name)
     return find_voice(name)
 
+
+def _download_file(file_url, download_file_path: Path, file_name=None):
+    download_file_path.parent.mkdir(parents=True, exist_ok=True)
+    file_name = file_name or download_file_path.name
+    LOG.debug("Downloading %s to %s", file_url, download_file_path)
+    try:
+        with urlopen(quote(file_url, safe=":/")) as response, open(
+                download_file_path, "wb"
+        ) as download_file:
+            shutil.copyfileobj(response, download_file)
+        LOG.info("Downloaded %s (%s)", download_file_path, file_url)
+    except Exception as e:
+        LOG.error(f"Failed to download {file_url}: {e}")
+        raise VoiceNotFoundError(f"Could not download file {file_name}") from e
+
+
 def find_voice(name: str) -> Tuple[Path, Path]:
+    if name in LOCALMODELS:
+        model_path, model_cfg = LOCALMODELS[name]
+        return Path(model_path), Path(model_cfg)
     data_dir = Path(DATA_DIR)
     name = SHORTNAMES.get(name) or name
     onnx_path = data_dir / f"{name}.onnx"
@@ -149,9 +164,6 @@ def find_voice(name: str) -> Tuple[Path, Path]:
 
     raise VoiceNotFoundError(f"Missing files for voice {name}")
 
-
-LANG2VOICES = defaultdict(list)
-SHORTNAMES = {}
 
 for voice, data in get_available_voices().items():
     lang = standardize_lang_tag(data["language"]["code"])
@@ -181,3 +193,25 @@ def get_lang_voices(lang: str) -> List[Tuple[str, int]]:
 
 def get_default_voice(lang: str) -> str:
     return get_lang_voices(lang)[0][0]
+
+
+def add_local_model(voice: str, model_path: str, model_cfg: str, lang: str):
+    global LOCALMODELS, LANG2VOICES
+    LOG.info(f"Adding local piperTTS model: {model_path}")
+    if model_path.startswith("http"):
+        data_dir = Path(DATA_DIR)
+        file_name = model_path.split("/")[-1]
+        download_file_path = data_dir / file_name
+        if not download_file_path.exists():
+            _download_file(model_path, download_file_path)
+        model_path = download_file_path
+    if model_cfg.startswith("http"):
+        data_dir = Path(DATA_DIR)
+        file_name = model_cfg.split("/")[-1]
+        download_file_path = data_dir / file_name
+        if not download_file_path.exists():
+            _download_file(model_cfg, download_file_path)
+        model_cfg = download_file_path
+
+    LOCALMODELS[voice] = [model_path, model_cfg]
+    LANG2VOICES[lang].append(voice)

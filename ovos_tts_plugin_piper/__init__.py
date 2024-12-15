@@ -18,8 +18,10 @@ from ovos_plugin_manager.templates.tts import TTS
 from ovos_utils.lang import standardize_lang_tag
 from ovos_utils.log import LOG
 
-from ovos_tts_plugin_piper.download import LANG2VOICES, SHORTNAMES, VoiceNotFoundError, get_voice_files, get_lang_voices, get_default_voice
 from ovos_tts_plugin_piper.piper import PiperVoice, PiperConfig
+from ovos_tts_plugin_piper.voice_models import add_local_model, LOCALMODELS, LANG2VOICES, SHORTNAMES, \
+    VoiceNotFoundError, \
+    get_voice_files, get_lang_voices, get_default_voice
 
 
 class PiperTTSPlugin(TTS):
@@ -28,7 +30,13 @@ class PiperTTSPlugin(TTS):
 
     def __init__(self, config=None):
         super().__init__(config=config)
-        if self.voice == "default":
+        if self.config.get("model"):
+            model = self.config["model"]
+            model_config = self.config.get("model_config") or model + ".json"
+            add_local_model(voice=self.voice, model_path=model,
+                            model_cfg=model_config, lang=self.lang)
+
+        elif self.voice == "default":
             if self.lang.startswith("en"):
                 # alan pope is the default english voice of mycroft/OVOS
                 self.voice = "alan-low"
@@ -45,7 +53,7 @@ class PiperTTSPlugin(TTS):
 
         # pre-load models
         preload_voices = self.config.get("preload_voices") or []
-        preload_langs = self.config.get("preload_langs") or [self.lang]
+        preload_langs = self.config.get("preload_langs") or []
 
         for lang in preload_langs:
             lang = standardize_lang_tag(lang)
@@ -56,13 +64,16 @@ class PiperTTSPlugin(TTS):
                 preload_voices.append(voice)
 
         for voice in preload_voices:
-            self.get_model(voice=voice)
+            self.lang2model(voice=voice)
 
-    def get_model(self, lang=None, voice=None, speaker=None):
-
+    def lang2model(self, lang=None, voice=None, speaker=None):
         # find default voice  (should be called model not voice....)
         if voice is None and lang is not None:
-            voice = get_default_voice(lang)
+            lang = standardize_lang_tag(lang)
+            if lang == self.lang and LOCALMODELS:
+                voice = self.voice
+            else:
+                voice = get_default_voice(lang)
 
         voice = voice or self.voice
 
@@ -95,6 +106,11 @@ class PiperTTSPlugin(TTS):
             LOG.error(f"Voice files for '{voice}' not found: {e}")
             raise
 
+        return self.get_model(str(model), str(model_config), voice, speaker)
+
+    def get_model(self, model: str, model_config: str,
+                  voice: str = None, speaker=0):
+        voice = voice or self.voice
         with open(model_config, "r", encoding="utf-8") as config_file:
             config_dict = json.load(config_file)
 
@@ -132,7 +148,7 @@ class PiperTTSPlugin(TTS):
             LOG.warning("Legacy Neon TTS signature found, pass speaker as a str")
             speaker = None
 
-        engine, speaker = self.get_model(lang, voice, speaker)
+        engine, speaker = self.lang2model(lang, voice, speaker)
         with wave.open(wav_file, "wb") as f:
             engine.synthesize(sentence, f,
                               speaker_id=speaker,
@@ -153,8 +169,12 @@ PiperTTSPluginConfig = {
 }
 
 if __name__ == "__main__":
-    config = {}
-    config["lang"] = "en-gb"
+    # test remote model
+    config = {
+        "lang": "en-us",
+        "model": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx",
+        "model_config": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx.json"
+    }
     e = PiperTTSPlugin(config=config)
     e.get_tts("hello world", "hello.wav")
     print(PiperTTSPluginConfig)
