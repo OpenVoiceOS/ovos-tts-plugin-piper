@@ -61,6 +61,7 @@ setup(
     author_email='jarbasai@mailfence.com',
     license='Apache-2.0',
     packages=['ovos_tts_plugin_piper'],
+    package_data={'': package_files('ovos_tts_plugin_piper')},
     install_requires=required("requirements.txt"),
     zip_safe=True,
     classifiers=[

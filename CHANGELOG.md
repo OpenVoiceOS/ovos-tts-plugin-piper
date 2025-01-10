@@ -1,25 +1,13 @@
 # Changelog
 
-## [0.0.2a2](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.0.2a2) (2024-09-12)
+## [0.1.0a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.1.0a1) (2024-12-19)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.2a1...0.0.2a2)
-
-**Fixed bugs:**
-
-- Plugin doesn't work [\#25](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/25)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/0.0.2...0.1.0a1)
 
 **Merged pull requests:**
 
-- feat:semver [\#29](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/29) ([JarbasAl](https://github.com/JarbasAl))
-- readme.md links to OpenVoiceOS.org [\#24](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/24) ([gavmor](https://github.com/gavmor))
-
-## [V0.0.2a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/V0.0.2a1) (2024-01-21)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/V0.0.1...V0.0.2a1)
-
-**Merged pull requests:**
-
-- feat: upgrade to piper-tts 1.2.0 and remove support for Python \< 3.9 [\#22](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/22) ([dblencowe](https://github.com/dblencowe))
+- feat:remote\_voices [\#33](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/33) ([JarbasAl](https://github.com/JarbasAl))
+- Added en-us-ljspeech-high [\#28](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/28) ([kartikkwatra](https://github.com/kartikkwatra))
 
 
 
