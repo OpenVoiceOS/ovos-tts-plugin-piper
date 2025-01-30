@@ -70,6 +70,7 @@ class PiperTTSPlugin(TTS):
         if isinstance(self.voice, list):
             self.voice = self.voice[0]
 
+        self.accent = self.config.get("accent", None)
         self.use_cuda = self.config.get("use_cuda", False)
         self.noise_scale = self.config.get("noise-scale")  # generator noise
         self.length_scale = self.config.get("length-scale")  # Phoneme length
@@ -171,7 +172,10 @@ class PiperTTSPlugin(TTS):
             LOG.warning("Legacy Neon TTS signature found, pass speaker as a str")
             speaker = None
 
-        phonemizer_lang = None  # model's default accent
+        phonemizer_lang = None  # if None use model's default accent
+        if self.accent:
+            phonemizer_lang = get_espeak_voice(self.accent)
+
         if voice:
             # user requested a specific voice model to be used
             lang = lang or self.lang
@@ -184,7 +188,6 @@ class PiperTTSPlugin(TTS):
                 # force a specific espeak phonemizer to match lang pronunciation
                 # this allows a voice to speak a different language a bit better
                 phonemizer_lang = get_espeak_voice(lang)
-                LOG.debug(f"Forcing Piper accent: {phonemizer_lang}")
                 engine, speaker, voice = self.lang2model(self.lang, self.voice)
             except:  # change to a voice that supports the lang
                 LOG.debug("Switching TTS model for one that supports target language")
@@ -192,6 +195,9 @@ class PiperTTSPlugin(TTS):
         else:
             # default case, no specific voice or lang requested
             engine, speaker, voice = self.lang2model(self.lang, self.voice)
+
+        if phonemizer_lang:
+            LOG.debug(f"Forcing Piper accent: {phonemizer_lang}")
 
         with wave.open(wav_file, "wb") as f:
             engine.synthesize(sentence, f,
