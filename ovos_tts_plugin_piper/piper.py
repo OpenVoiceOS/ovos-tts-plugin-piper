@@ -117,7 +117,6 @@ class PiperVoice:
         """Text to phonemes grouped by sentence."""
         if self.config.phoneme_type == PhonemeType.ESPEAK:
             phonemizer_lang = phonemizer_lang or self.config.espeak_voice
-            print(f"Phonemizer lang: {phonemizer_lang}")
             if phonemizer_lang == "ar":
                 # Arabic diacritization
                 # https://github.com/mush42/libtashkeel/
