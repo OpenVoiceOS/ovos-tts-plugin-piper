@@ -14,14 +14,38 @@ import json
 import wave
 
 import onnxruntime
+from langcodes import closest_supported_match
+from ovos_tts_plugin_piper.piper import PiperVoice, PiperConfig
+from ovos_tts_plugin_piper.voice_models import add_local_model, LOCALMODELS, LANG2VOICES, SHORTNAMES, \
+    VoiceNotFoundError, get_voice_files, get_default_voice
+
 from ovos_plugin_manager.templates.tts import TTS
 from ovos_utils.lang import standardize_lang_tag
 from ovos_utils.log import LOG
 
-from ovos_tts_plugin_piper.piper import PiperVoice, PiperConfig
-from ovos_tts_plugin_piper.voice_models import add_local_model, LOCALMODELS, LANG2VOICES, SHORTNAMES, \
-    VoiceNotFoundError, \
-    get_voice_files, get_lang_voices, get_default_voice
+
+def get_espeak_voice(lang: str) -> str:
+    _ESPEAK_VOICES = {'es-419', 'ca', 'qya', 'ga', 'en-us-nyc', 'et', 'ky', 'io', 'fa-latn', 'en-gb', 'fo', 'haw', 'kl',
+                      'ta', 'ml', 'gd', 'sd', 'es', 'hy', 'ur', 'ro', 'hi', 'or', 'ti', 'ca-va', 'om', 'tr', 'pa',
+                      'smj', 'mk', 'bg', 'cv', "fr", 'fi', 'en-gb-x-rp', 'ru', 'mt', 'an', 'mr', 'pap', 'vi', 'id',
+                      'chr-US-Qaaa-x-west', 'fr-be', 'ltg', 'my', 'nl', 'shn', 'ba', 'az', 'cmn', 'da', 'as', 'sw',
+                      'piqd', 'en-us', 'hr', 'it', 'ug', 'th', 'mi', 'cy', 'ru-lv', 'ia', 'tt', 'hu', 'xex', 'te', 'ne',
+                      'eu', 'ja', 'bpy', 'hak', 'cs', 'en-gb-scotland', 'hyw', 'uk', 'pt', 'bn', 'mto', 'yue',
+                      'be', 'gu', 'sv', 'sl', 'cmn-latn-pinyin', 'lfn', 'lv', 'fa', 'sjn', 'nog', 'ms',
+                      'vi-vn-x-central', 'lt', 'kn', 'he', 'qu', 'ca-ba', 'quc', 'nb', 'sk', 'tn', 'py', 'si', 'de',
+                      'ar', 'en-gb-x-gbcwmd', 'bs', 'qdb', 'sq', 'sr', 'tk', 'en-029', 'ht', 'ru-cl', 'af', 'pt-br',
+                      'fr-ch', 'ka', 'en-gb-x-gbclan', 'ko', 'is', 'ca-nw', 'gn', 'kok', 'la', 'lb', 'am', 'kk', 'ku',
+                      'kaa', 'jbo', 'eo', 'uz', 'nci', 'vi-vn-x-south', 'el', 'pl', 'grc'}
+    _INVALID = ['chr-US-Qaaa-x-west', 'en-us-nyc', 'fr-fr']  # fails to normalize
+
+    if lang.lower() == "en-gb":
+        return "en-gb-x-rp"
+    if lang in _ESPEAK_VOICES or lang in _INVALID:
+        return lang
+    if lang.lower().split("-")[0] in _ESPEAK_VOICES:
+        return lang.lower().split("-")[0]
+    voices = [v for v in _ESPEAK_VOICES if v not in _INVALID]
+    return closest_supported_match(lang, voices, 10)
 
 
 class PiperTTSPlugin(TTS):
@@ -98,7 +122,7 @@ class PiperTTSPlugin(TTS):
 
         # pre-loaded models
         if voice in PiperTTSPlugin.engines:
-            return PiperTTSPlugin.engines[voice], speaker
+            return PiperTTSPlugin.engines[voice], speaker, voice
 
         try:
             model, model_config = get_voice_files(voice)
@@ -126,7 +150,7 @@ class PiperTTSPlugin(TTS):
         )
         LOG.debug(f"loaded model: {model}")
         PiperTTSPlugin.engines[voice] = engine
-        return engine, speaker
+        return engine, speaker, voice
 
     def get_tts(self, sentence, wav_file, lang=None, voice=None, speaker=None):
         """Generate WAV and phonemes.
@@ -141,20 +165,41 @@ class PiperTTSPlugin(TTS):
         Returns:
             tuple ((str) file location, (str) generated phonemes)
         """
-        lang = lang or self.lang
         # HACK: bug in some neon-core versions
         # neon_audio.tts.neon:_get_tts:198 - INFO - Legacy Neon TTS signature found
         if isinstance(speaker, dict):
             LOG.warning("Legacy Neon TTS signature found, pass speaker as a str")
             speaker = None
 
-        engine, speaker = self.lang2model(lang, voice, speaker)
+        phonemizer_lang = None  # model's default accent
+        if voice:
+            # user requested a specific voice model to be used
+            lang = lang or self.lang
+            engine, speaker, voice = self.lang2model(lang, voice, speaker)
+        elif lang:
+            # requested a language but not a voice
+            # - try to use default voice, but force language via phonemizer
+            # - change to a different TTS model completely
+            try:
+                # force a specific espeak phonemizer to match lang pronunciation
+                # this allows a voice to speak a different language a bit better
+                phonemizer_lang = get_espeak_voice(lang)
+                LOG.debug(f"Forcing Piper accent: {phonemizer_lang}")
+                engine, speaker, voice = self.lang2model(self.lang, self.voice)
+            except:  # change to a voice that supports the lang
+                LOG.debug("Switching TTS model for one that supports target language")
+                engine, speaker, voice = self.lang2model(lang, voice, speaker)
+        else:
+            # default case, no specific voice or lang requested
+            engine, speaker, voice = self.lang2model(self.lang, self.voice)
+
         with wave.open(wav_file, "wb") as f:
             engine.synthesize(sentence, f,
                               speaker_id=speaker,
                               length_scale=self.length_scale,
                               noise_scale=self.noise_scale,
-                              noise_w=self.noise_w)
+                              noise_w=self.noise_w,
+                              phonemizer_lang=phonemizer_lang)
 
         return wav_file, None
 
@@ -169,21 +214,17 @@ PiperTTSPluginConfig = {
 }
 
 if __name__ == "__main__":
-    # test remote model
-    config = {
-        "lang": "en-us",
-        "model": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx",
-        "model_config": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx.json"
-    }
-    e = PiperTTSPlugin(config=config)
-    e.get_tts("hello world", "hello.wav")
-
-    # test all voices
-    for lang, voices in PiperTTSPluginConfig.items():
-        for voice in voices:
-            v = list(voice.keys())[0]
-            print(lang, v)
-            e = PiperTTSPlugin(config={"voice": v, "lang": lang})
-            e.get_tts("test 1 2 3", f"{lang}_{v}.wav",
-                      voice=v, lang=lang)
-
+    for lang, sentence in [
+        ("pt-PT", "olá mundo"),
+        ("en-GB", "hello world"),
+        ("en-US", "hello world"),
+        ("en-AU", "hello world"),
+        ("es-ES", "hola mundo"),
+        ("ca-ES", "hola món"),
+        ("fr-FR", "bonjour le monde"),
+        ("it-IT", "ciao mondo"),
+        ("nl-NL", "hallo wereld"),
+        ("de-DE", "hallo welt")
+    ]:
+        e = PiperTTSPlugin()
+        e.get_tts(sentence, f"ap_{lang}.wav", lang=lang)
