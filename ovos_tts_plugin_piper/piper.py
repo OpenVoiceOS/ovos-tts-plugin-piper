@@ -7,8 +7,9 @@ from typing import Any, Dict, Mapping, Sequence, Iterable, List, Optional, Tuple
 
 import numpy as np
 import onnxruntime
-from ovos_utils.log import LOG
 from piper_phonemize import phonemize_codepoints, phonemize_espeak, tashkeel_run
+
+from ovos_utils.log import LOG
 
 PAD = "_"  # padding (0)
 BOS = "^"  # beginning of sentence
@@ -112,15 +113,15 @@ class PiperVoice:
             ),
         )
 
-    def phonemize(self, text: str) -> List[List[str]]:
+    def phonemize(self, text: str, phonemizer_lang: Optional[str] = None) -> List[List[str]]:
         """Text to phonemes grouped by sentence."""
         if self.config.phoneme_type == PhonemeType.ESPEAK:
-            if self.config.espeak_voice == "ar":
+            phonemizer_lang = phonemizer_lang or self.config.espeak_voice
+            if phonemizer_lang == "ar":
                 # Arabic diacritization
                 # https://github.com/mush42/libtashkeel/
                 text = tashkeel_run(text)
-
-            return phonemize_espeak(text, self.config.espeak_voice)
+            return phonemize_espeak(text, phonemizer_lang)
 
         if self.config.phoneme_type == PhonemeType.TEXT:
             return phonemize_codepoints(text)
@@ -153,6 +154,7 @@ class PiperVoice:
             noise_scale: Optional[float] = None,
             noise_w: Optional[float] = None,
             sentence_silence: float = 0.0,
+            phonemizer_lang: Optional[str] = None
     ):
         """Synthesize WAV audio from text."""
         wav_file.setframerate(self.config.sample_rate)
@@ -166,6 +168,7 @@ class PiperVoice:
                 noise_scale=noise_scale,
                 noise_w=noise_w,
                 sentence_silence=sentence_silence,
+                phonemizer_lang=phonemizer_lang
         ):
             wav_file.writeframes(audio_bytes)
 
@@ -177,9 +180,10 @@ class PiperVoice:
             noise_scale: Optional[float] = None,
             noise_w: Optional[float] = None,
             sentence_silence: float = 0.0,
+            phonemizer_lang: Optional[str] = None
     ) -> Iterable[bytes]:
         """Synthesize raw audio per sentence from text."""
-        sentence_phonemes = self.phonemize(text)
+        sentence_phonemes = self.phonemize(text, phonemizer_lang)
 
         # 16-bit mono
         num_silence_samples = int(sentence_silence * self.config.sample_rate)
