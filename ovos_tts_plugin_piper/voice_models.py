@@ -39,7 +39,7 @@ def get_file_hash(path: Union[str, Path], bytes_per_chunk: int = 8192) -> str:
     return path_hash.hexdigest()
 
 
-def get_available_voices(update_voices: bool = False) -> Dict[str, Any]:
+def get_available_voices(update_voices: bool = True) -> Dict[str, Any]:
     """Loads available voices from downloaded or embedded JSON file."""
     download_dir = Path(DATA_DIR)
     voices_download = download_dir / "voices.json"
