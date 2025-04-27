@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.1a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.2.1a1) (2025-04-27)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/0.2.0a1...0.2.1a1)
+
+**Closed issues:**
+
+- \[FEAT\] Dynamically pull available voices [\#32](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/32)
+
+**Merged pull requests:**
+
+- fix: voice update [\#38](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/38) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.2.0a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.2.0a1) (2025-02-02)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/0.1.0...0.2.0a1)
