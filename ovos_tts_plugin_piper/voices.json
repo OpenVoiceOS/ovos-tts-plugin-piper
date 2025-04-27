@@ -5451,6 +5451,66 @@
             "nl-mls_7432-low"
         ]
     },
+    "nl_NL-pim-medium": {
+        "key": "nl_NL-pim-medium",
+        "name": "pim",
+        "language": {
+            "code": "nl_NL",
+            "family": "nl",
+            "region": "NL",
+            "name_native": "Nederlands",
+            "name_english": "Dutch",
+            "country_english": "Netherlands"
+        },
+        "quality": "medium",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {
+            "nl/nl_NL/pim/medium/nl_NL-pim-medium.onnx": {
+                "size_bytes": 63516050,
+                "md5_digest": "190b3e6463a931d3c583d2fa7cd0e4a0"
+            },
+            "nl/nl_NL/pim/medium/nl_NL-pim-medium.onnx.json": {
+                "size_bytes": 5037,
+                "md5_digest": "c4d22097fefa2afe275b9bb6ff4db865"
+            },
+            "nl/nl_NL/pim/medium/MODEL_CARD": {
+                "size_bytes": 276,
+                "md5_digest": "2d28b81a9acf714216f8d334581e8439"
+            }
+        },
+        "aliases": []
+    },
+    "nl_NL-ronnie-medium": {
+        "key": "nl_NL-ronnie-medium",
+        "name": "ronnie",
+        "language": {
+            "code": "nl_NL",
+            "family": "nl",
+            "region": "NL",
+            "name_native": "Nederlands",
+            "name_english": "Dutch",
+            "country_english": "Netherlands"
+        },
+        "quality": "medium",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {
+            "nl/nl_NL/ronnie/medium/nl_NL-ronnie-medium.onnx": {
+                "size_bytes": 62950044,
+                "md5_digest": "f74c8e7779cb05f935367d661de5b380"
+            },
+            "nl/nl_NL/ronnie/medium/nl_NL-ronnie-medium.onnx.json": {
+                "size_bytes": 5040,
+                "md5_digest": "6bd4d32724d8c68926ce7b5012370e61"
+            },
+            "nl/nl_NL/ronnie/medium/MODEL_CARD": {
+                "size_bytes": 279,
+                "md5_digest": "97acf736be1e3fdd8d9ed576dceffb29"
+            }
+        },
+        "aliases": []
+    },
     "no_NO-talesyntese-medium": {
         "key": "no_NO-talesyntese-medium",
         "name": "talesyntese",
