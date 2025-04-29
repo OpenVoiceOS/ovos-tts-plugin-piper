@@ -2,5 +2,5 @@ ovos-plugin-manager>=0.0.5
 ovos-utils>=0.2.1
 langcodes
 onnxruntime
-numpy<2.0.0
+numpy<3.0.0
 piper_phonemize
