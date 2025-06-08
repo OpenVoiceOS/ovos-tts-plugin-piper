@@ -1,13 +1,33 @@
 # Changelog
 
-## [0.1.0a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.1.0a1) (2024-12-19)
+## [0.2.2a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.2.2a1) (2025-06-08)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/0.0.2...0.1.0a1)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/0.2.1a1...0.2.2a1)
 
 **Merged pull requests:**
 
-- feat:remote\_voices [\#33](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/33) ([JarbasAl](https://github.com/JarbasAl))
-- Added en-us-ljspeech-high [\#28](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/28) ([kartikkwatra](https://github.com/kartikkwatra))
+- fix: compatibility with ovos-plugin-manager 1.X.X [\#41](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/41) ([JarbasAl](https://github.com/JarbasAl))
+- Update voices.json [\#40](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/40) ([timonvanhasselt](https://github.com/timonvanhasselt))
+
+## [0.2.1a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.2.1a1) (2025-04-27)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/0.2.0a1...0.2.1a1)
+
+**Closed issues:**
+
+- \[FEAT\] Dynamically pull available voices [\#32](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/32)
+
+**Merged pull requests:**
+
+- fix: voice update [\#38](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/38) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.2.0a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.2.0a1) (2025-02-02)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/0.1.0...0.2.0a1)
+
+**Merged pull requests:**
+
+- feat: configurable voice accent [\#36](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/36) ([JarbasAl](https://github.com/JarbasAl))
 
 
 
