@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.2a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.2.2a1) (2025-06-08)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/0.2.1a1...0.2.2a1)
+
+**Merged pull requests:**
+
+- fix: compatibility with ovos-plugin-manager 1.X.X [\#41](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/41) ([JarbasAl](https://github.com/JarbasAl))
+- Update voices.json [\#40](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/40) ([timonvanhasselt](https://github.com/timonvanhasselt))
+
 ## [0.2.1a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.2.1a1) (2025-04-27)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/0.2.0a1...0.2.1a1)
