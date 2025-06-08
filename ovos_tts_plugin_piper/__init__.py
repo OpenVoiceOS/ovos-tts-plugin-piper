@@ -11,15 +11,14 @@
 # limitations under the License.
 #
 import json
-import wave
-
 import onnxruntime
+import wave
 from langcodes import closest_supported_match
+from ovos_plugin_manager.templates.tts import TTS
 from ovos_tts_plugin_piper.piper import PiperVoice, PiperConfig
 from ovos_tts_plugin_piper.voice_models import add_local_model, LOCALMODELS, LANG2VOICES, SHORTNAMES, \
     VoiceNotFoundError, get_voice_files, get_default_voice
-
-from ovos_plugin_manager.templates.tts import TTS
+from ovos_utils import classproperty
 from ovos_utils.lang import standardize_lang_tag
 from ovos_utils.log import LOG
 
@@ -209,7 +208,8 @@ class PiperTTSPlugin(TTS):
 
         return wav_file, None
 
-    def available_languages(self) -> set:
+    @classproperty
+    def available_languages(cls) -> set:
         return set(LANG2VOICES.keys())
 
 

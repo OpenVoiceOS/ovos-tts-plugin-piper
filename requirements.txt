@@ -1,4 +1,4 @@
-ovos-plugin-manager>=0.0.5
+ovos-plugin-manager>=1.0.0,<2.0.0
 ovos-utils>=0.2.1
 langcodes
 onnxruntime
