@@ -3,6 +3,4 @@ ovos-utils>=0.2.1
 langcodes
 onnxruntime
 numpy<3.0.0
-ovos-date-parser
-ovos-number-parser
 quebra-frases

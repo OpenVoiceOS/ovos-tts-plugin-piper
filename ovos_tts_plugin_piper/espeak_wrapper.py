@@ -9,8 +9,6 @@ from typing import List, Tuple, Optional, Literal
 from langcodes import tag_distance
 from quebra_frases import sentence_tokenize
 
-from ovos_tts_plugin_piper.util import normalize
-
 # list of (substring, terminator, end_of_sentence) tuples.
 TextChunks = List[Tuple[str, str, bool]]
 # list of (phonemes, terminator, end_of_sentence) tuples.
@@ -40,7 +38,6 @@ class BasePhonemizer(metaclass=abc.ABCMeta):
         if not text:
             return [('', '', True)]
         results: RawPhonemizedChunks = []
-        text = normalize(text, lang)
         for chunk, punct, eos in self.chunk_text(text):
             phoneme_str = self.phonemize_string(self.remove_punctuation(chunk), lang)
             results += [(phoneme_str, punct, True)]
@@ -191,7 +188,6 @@ class EspeakPhonemizer(BasePhonemizer):
         if not text:
             return [('', '', True)]
         results: RawPhonemizedChunks = []
-        text = normalize(text, lang)
         for chunk, punct, eos in self.chunk_text(text):
             phoneme_str = self.phonemize_string(self.remove_punctuation(chunk), lang)
             results += [(phoneme_str, punct, True)]
