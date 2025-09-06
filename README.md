@@ -6,9 +6,9 @@
 
 `pip install ovos-tts-plugin-piper`
 
-> **NOTE**: `espeak` must also be available in your base OS
+> NOTE: `espeak-ng` must be available in your base OS (install via your distro package manager)
 
-for arabic piper models you will also need to install `piper-phonemize`/`piper-phonemize-fix` for the tashkeel diacritizer
+For Arabic Piper models, you may optionally install `piper-phonemize` (or `piper-phonemize-fix`) to enable the tashkeel diacritizer.
 
 ## Configuration
 

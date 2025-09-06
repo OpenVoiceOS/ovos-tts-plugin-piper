@@ -121,8 +121,11 @@ class PiperVoice:
             if phonemizer_lang == "ar":
                 # Arabic diacritization
                 # https://github.com/mush42/libtashkeel/
-                from piper_phonemize import tashkeel_run
-                text = tashkeel_run(text)
+                try:
+                    from piper_phonemize import tashkeel_run
+                    text = tashkeel_run(text)
+                except:
+                    LOG.error("Failed to run tashkeel diacritizer, is piper-phonemize installed?")
             return self.phonemizer.phonemize(text, phonemizer_lang)
 
         if self.config.phoneme_type == PhonemeType.TEXT:
