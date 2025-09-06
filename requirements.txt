@@ -5,3 +5,4 @@ onnxruntime
 numpy<3.0.0
 ovos-date-parser
 ovos-number-parser
+quebra-frases
