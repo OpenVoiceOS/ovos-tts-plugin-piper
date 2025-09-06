@@ -6,6 +6,10 @@
 
 `pip install ovos-tts-plugin-piper`
 
+> **NOTE**: `espeak` must also be available in your base OS
+
+for arabic piper models you will also need to install `piper-phonemize`/`piper-phonemize-fix` for the tashkeel diacritizer
+
 ## Configuration
 
 voice models are automatically downloaded from https://huggingface.co/rhasspy/piper-voices into `~/.local/share/piper_tts`
