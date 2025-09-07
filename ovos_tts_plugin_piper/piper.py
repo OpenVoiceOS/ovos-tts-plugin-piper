@@ -7,8 +7,7 @@ from typing import Any, Dict, Mapping, Sequence, Iterable, List, Optional, Tuple
 
 import numpy as np
 import onnxruntime
-from piper_phonemize import phonemize_codepoints, phonemize_espeak, tashkeel_run
-
+from ovos_tts_plugin_piper.espeak_wrapper import EspeakPhonemizer, UnicodeCodepointPhonemizer
 from ovos_utils.log import LOG
 
 PAD = "_"  # padding (0)
@@ -79,6 +78,8 @@ def audio_float_to_int16(
 class PiperVoice:
     session: onnxruntime.InferenceSession
     config: PiperConfig
+    phonemizer: EspeakPhonemizer = EspeakPhonemizer()
+    unicode_phonemizer: UnicodeCodepointPhonemizer = UnicodeCodepointPhonemizer()
 
     @staticmethod
     def load(
@@ -116,15 +117,19 @@ class PiperVoice:
     def phonemize(self, text: str, phonemizer_lang: Optional[str] = None) -> List[List[str]]:
         """Text to phonemes grouped by sentence."""
         if self.config.phoneme_type == PhonemeType.ESPEAK:
-            phonemizer_lang = phonemizer_lang or self.config.espeak_voice
+            phonemizer_lang: str = phonemizer_lang or self.config.espeak_voice
             if phonemizer_lang == "ar":
                 # Arabic diacritization
                 # https://github.com/mush42/libtashkeel/
-                text = tashkeel_run(text)
-            return phonemize_espeak(text, phonemizer_lang)
+                try:
+                    from piper_phonemize import tashkeel_run
+                    text = tashkeel_run(text)
+                except:
+                    LOG.error("Failed to run tashkeel diacritizer, is piper-phonemize installed?")
+            return self.phonemizer.phonemize(text, phonemizer_lang)
 
         if self.config.phoneme_type == PhonemeType.TEXT:
-            return phonemize_codepoints(text)
+            return self.unicode_phonemizer.phonemize(text, phonemizer_lang)
 
         raise ValueError(f"Unexpected phoneme type: {self.config.phoneme_type}")
 
