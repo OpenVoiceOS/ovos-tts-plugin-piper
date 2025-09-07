@@ -1,12 +1,24 @@
 # Changelog
 
-## [0.2.4a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.2.4a1) (2025-06-20)
+## [0.2.5a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/tree/0.2.5a1) (2025-09-07)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/0.2.3...0.2.4a1)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/compare/0.2.4...0.2.5a1)
+
+**Fixed bugs:**
+
+- py 3.12 support [\#27](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/27)
+
+**Closed issues:**
+
+- Improve time parser in pronounce\_time function [\#49](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/49)
+- Refactor: Normalize all date occurrences in text, not just the first [\#48](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/48)
+- Upgrading to piper-tts 1.2.0 means dropping support for Python \< 3.9 [\#21](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/21)
+- Downloading URLs via "voice" doesn't work [\#18](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/18)
+- Path not resolving properly when specifying only a gender [\#10](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/issues/10)
 
 **Merged pull requests:**
 
-- fix: working in newer pythons [\#44](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/44) ([JarbasAl](https://github.com/JarbasAl))
+- fix: use system espeak / drop piper-phonemize dependency [\#47](https://github.com/OpenVoiceOS/ovos-tts-plugin-piper/pull/47) ([JarbasAl](https://github.com/JarbasAl))
 
 
 
