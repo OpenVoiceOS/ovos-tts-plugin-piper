@@ -1,6 +1,6 @@
-ovos-plugin-manager>=1.0.0,<2.0.0
+ovos-plugin-manager>=1.0.0,<3.0.0
 ovos-utils>=0.2.1
 langcodes
 onnxruntime
-numpy<2.0.0
-piper-phonemize-fix
+numpy<3.0.0
+quebra-frases
