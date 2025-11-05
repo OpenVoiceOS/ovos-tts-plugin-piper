@@ -53,7 +53,7 @@ PLUGIN_ENTRY_POINT = 'ovos-tts-plugin-piper = ovos_tts_plugin_piper:PiperTTSPlug
 SAMPLE_CONFIGS = 'ovos-tts-plugin-piper.config = ovos_tts_plugin_piper:PiperTTSPluginConfig'
 
 setup(
-    name='ovos-tts-plugin-piper',
+    name='ovos_tts_plugin_piper',
     version=get_version(),
     description='piper tts plugin for OpenVoiceOS',
     url='https://github.com/OpenVoiceOS/ovos-tts-plugin-piper',
