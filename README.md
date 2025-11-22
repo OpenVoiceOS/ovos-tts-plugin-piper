@@ -2,6 +2,12 @@
 
 [OpenVoiceOS (OVOS)](https://openvoiceos.org) TTS plugin for [piper](https://github.com/rhasspy/piper)
 
+-------
+
+> **WARNING**: this plugin is no longer maintained, you should move to [phoonnx](https://github.com/TigreGotico/phoonnx), a generic VITS inference plugin that supports piper, mimic3, coqui, MMS...
+
+-------
+
 ## Install
 
 `pip install ovos-tts-plugin-piper`
