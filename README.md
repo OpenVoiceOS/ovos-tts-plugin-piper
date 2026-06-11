@@ -70,4 +70,4 @@ All available Piper voices (and every other supported voice) are listed in [VOIC
 
 ## Credits
 
-Original plugin by the OpenVoiceOS community. Piper TTS engine by [rhasspy](https://github.com/rhasspy/piper).
+This plugin was developed by [TigreGotico](https://tigregotico.pt) for OpenVoiceOS. Piper TTS engine by [rhasspy](https://github.com/rhasspy/piper).
