@@ -29,8 +29,8 @@ Replace the plugin module and key. Voice IDs use the `piper/<lang_code>-<name>` 
 **After:**
 ```json
 "tts": {
-  "module": "phoonnx",
-  "phoonnx": {
+  "module": "ovos-tts-plugin-phoonnx",
+  "ovos-tts-plugin-phoonnx": {
     "voice": "piper/en_GB-alan-low"
   }
 }
@@ -40,8 +40,8 @@ Replace the plugin module and key. Voice IDs use the `piper/<lang_code>-<name>` 
 
 ```json
 "tts": {
-  "module": "phoonnx",
-  "phoonnx": {
+  "module": "ovos-tts-plugin-phoonnx",
+  "ovos-tts-plugin-phoonnx": {
     "model": "/path/to/model.onnx",
     "model_config": "/path/to/model.onnx.json"
   }
@@ -52,8 +52,8 @@ Replace the plugin module and key. Voice IDs use the `piper/<lang_code>-<name>` 
 
 ```json
 "tts": {
-  "module": "phoonnx",
-  "phoonnx": {
+  "module": "ovos-tts-plugin-phoonnx",
+  "ovos-tts-plugin-phoonnx": {
     "model": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx",
     "model_config": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx.json"
   }
