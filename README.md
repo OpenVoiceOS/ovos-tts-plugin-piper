@@ -1,59 +1,79 @@
-## Description
+> **This repository is archived. No further updates will be made.**
+>
+> Piper support has been absorbed into [phoonnx](https://github.com/TigreGotico/phoonnx), a unified ONNX TTS plugin that supports Piper, Matcha, GlowTTS, MMS, and more — all from a single install. Migrate using the guide below.
 
-[OpenVoiceOS (OVOS)](https://openvoiceos.org) TTS plugin for [piper](https://github.com/rhasspy/piper)
-
--------
-
-> **WARNING**: this plugin is no longer maintained, you should move to [phoonnx](https://github.com/TigreGotico/phoonnx), a generic VITS inference plugin that supports piper, mimic3, coqui, MMS...
-
--------
+# ovos-tts-plugin-piper → phoonnx migration
 
 ## Install
 
-`pip install ovos-tts-plugin-piper`
-
-> NOTE: `espeak-ng` must be available in your base OS (install via your distro package manager)
-
-For Arabic Piper models, you may optionally install `piper-phonemize` (or `piper-phonemize-fix`) to enable the tashkeel diacritizer.
-
-## Configuration
-
-voice models are automatically downloaded from https://huggingface.co/rhasspy/piper-voices into `~/.local/share/piper_tts`
-
-full list of voices can be found [here](https://huggingface.co/rhasspy/piper-voices/blob/main/voices.json)
-
-you can also pass a short name alias without lang code, eg `"alan-low"` instead of `"en_GB-alan-low"`
-
-```json
-  "tts": {
-    "module": "ovos-tts-plugin-piper",
-    "ovos-tts-plugin-piper": {
-      "voice": "alan-low"
-    }
-  }
-```
-if no voice is set it will be auto selected based on language
-
-you can also define a local path for your own model
-
-```json
-  "tts": {
-    "module": "ovos-tts-plugin-piper",
-    "ovos-tts-plugin-piper": {
-      "model": "/path/to/model.onnx",
-      "model_config": "/path/to/model.onnx.json"
-    }
-  }
+```bash
+pip install phoonnx
 ```
 
-or a remote url
+`espeak-ng` must be available in your base OS (install via your distro package manager) — same requirement as before.
+
+## Configuration mapping
+
+Every Piper voice is available in phoonnx under the same name. Replace the plugin module and key:
+
+**Before:**
+```json
+"tts": {
+  "module": "ovos-tts-plugin-piper",
+  "ovos-tts-plugin-piper": {
+    "voice": "alan-low"
+  }
+}
+```
+
+**After:**
+```json
+"tts": {
+  "module": "phoonnx",
+  "phoonnx": {
+    "voice": "piper/en_GB-alan-low"
+  }
+}
+```
+
+The voice id format is `piper/<lang_code>-<name>` — matching the [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices/blob/main/voices.json) index. Short aliases without lang code also work: `"piper/alan-low"`.
+
+### Local model path
 
 ```json
-  "tts": {
-    "module": "ovos-tts-plugin-piper",
-    "ovos-tts-plugin-piper": {
-      "model": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx",
-      "model_config": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx.json"
-    }
+"tts": {
+  "module": "phoonnx",
+  "phoonnx": {
+    "model": "/path/to/model.onnx",
+    "model_config": "/path/to/model.onnx.json"
   }
+}
 ```
+
+### Remote URL
+
+```json
+"tts": {
+  "module": "phoonnx",
+  "phoonnx": {
+    "model": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx",
+    "model_config": "https://huggingface.co/poisson-fish/piper-vasco/resolve/main/onnx/vasco.onnx.json"
+  }
+}
+```
+
+### Auto-select by language
+
+Leave `voice` unset and phoonnx selects the best available voice for the configured language, including all Piper voices.
+
+## Voice catalogue
+
+Full list of available Piper voices: [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices/blob/main/voices.json)
+
+phoonnx also includes Matcha, GlowTTS, MMS, and community voices — see [TigreGotico/phoonnx](https://github.com/TigreGotico/phoonnx) for the complete catalogue.
+
+## Credits
+
+Original plugin by the OpenVoiceOS community. Piper TTS engine by [rhasspy](https://github.com/rhasspy/piper).
+
+> This plugin was funded by the Ministerio para la Transformación Digital y de la Función Pública and Plan de Recuperación, Transformación y Resiliencia - Funded by EU – NextGenerationEU within the framework of the project ILENIA with reference 2022/TL22/00215337
